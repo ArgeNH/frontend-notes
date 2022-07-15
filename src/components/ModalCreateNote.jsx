@@ -8,9 +8,13 @@ const URL = import.meta.env.VITE_URL_API;
 export const ModalCreateNote = ({ visible, setVisible }) => {
 
     const closeHandler = () => setVisible(false);
-    const [message, setMessage] = useState('');
+    const [message, setMessage] = useState({
+        state: false,
+        message: "",
+        
+    });
     const { value: title, setValue: setTitle, reset: resetTitle, bindings: changeTitle } = useInput();
-    const { value: content, setValue: setContent, reset: resetContent, bindings: changeContent } = useInput()
+    const { value: content, setValue: setContent, reset: resetContent, bindings: changeContent } = useInput();
 
     const handleSubmit = async () => {
         console.log(URL);
