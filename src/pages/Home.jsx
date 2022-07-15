@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { Button, Container, Text, Grid, Modal } from '@nextui-org/react';
+import { Button, Container, Text, Grid, Loading } from '@nextui-org/react';
 import { ModalCreateNote } from '../components/ModalCreateNote';
 import { CardNotes } from '../components/CardNotes';
 
@@ -62,13 +62,15 @@ export const Home = () => {
                     </Grid>
                 </Grid.Container>
             </Container>
-            <Container>
+            <Container responsive display='flex' justify='center'>
                 <Grid.Container gap={2}>
-                    {
-                        notes.map(note => (
-                            <CardNotes key={note.idNote} {...note} setIsChange={setIsChange} />
-                        ))
-                    }
+                        {
+                            notes.map(note => (
+
+                                <CardNotes key={note.idNote} {...note} setIsChange={setIsChange} isArchive={false} />
+
+                            ))
+                        }
                 </Grid.Container>
             </Container>
         </>
