@@ -5,6 +5,8 @@ import { Button, Container, Text, Grid } from '@nextui-org/react';
 import { TiArrowLeftThick } from 'react-icons/ti';
 
 import { CardNotes } from '../components/CardNotes';
+import { Nothing } from '../components/Nothing';
+import { Layout } from '../components/Layout';
 
 const URL = import.meta.env.VITE_URL_API;
 
@@ -31,38 +33,37 @@ export const ArchivedNotes = () => {
 
     return (
         <>
-            <Container responsive display='flex' gap={3}>
-                <Grid.Container gap={3}>
-                    <Grid>
-                        <Text h1 size={30} css={{
-                            textGradient: "45deg, $yellow600 -20%, $red600 100%",
-                        }}
-                            weight="bold"
-                        >
-                            Archived Notes
-                        </Text>
-                    </Grid>
+            <Layout gap={3}>
+                <Grid>
+                    <Text h1 size={30} css={{
+                        textGradient: "45deg, $yellow600 -20%, $red600 100%",
+                    }}
+                        weight="bold"
+                    >
+                        Archived Notes
+                    </Text>
+                </Grid>
 
-                    <Grid>
-                        <Text span h1 size={30}>📝</Text>
-                    </Grid>
-                    <Grid>
-                        <Button flat color='primary' auto onClick={navigateToHome}>
-                            <TiArrowLeftThick size={20} />
-                            Go back to unarchived notes
-                        </Button>
-                    </Grid>
-                </Grid.Container>
-            </Container>
-            <Container responsive display='flex' justify='center'>
-                <Grid.Container gap={2}>
-                    {
-                        notesArchived.map(note => (
-                            <CardNotes key={note.idNote} {...note} setIsChange={setIsChange} />
-                        ))
-                    }
-                </Grid.Container>
-            </Container>
+                <Grid>
+                    <Text span h1 size={30}>📝</Text>
+                </Grid>
+                <Grid>
+                    <Button flat color='primary' auto onClick={navigateToHome}>
+                        <TiArrowLeftThick size={20} />
+                        Go back to unarchived notes
+                    </Button>
+                </Grid>
+            </Layout>
+            <Layout gap={2}>
+                {
+                    notesArchived.map(note => (
+                        <CardNotes key={note.idNote} {...note} setIsChange={setIsChange} />
+                    ))
+                }
+                {
+                    notesArchived.length === 0 && (<Nothing text={'No archived notes'} />)
+                }
+            </Layout>
         </>
     )
 }

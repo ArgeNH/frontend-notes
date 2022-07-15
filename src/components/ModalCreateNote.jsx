@@ -1,16 +1,13 @@
 import { useState, useRef, useEffect } from "react";
 
 import { Modal, Button, Text, Input, Textarea, useInput } from "@nextui-org/react";
+import Swal from "sweetalert2";
 
 const URL = import.meta.env.VITE_URL_API;
 
 export const ModalCreateNote = ({ visible, setVisible, setIsChange, isChangeEdit, setIsChangeEdit, values }) => {
 
     const closeHandler = () => setVisible(false);
-    const [message, setMessage] = useState({
-        state: false,
-        message: '',
-    });
 
     const { value: title, setValue: setTitle, reset: resetTitle, bindings: changeTitle } = useInput();
     const { value: content, setValue: setContent, reset: resetContent, bindings: changeContent } = useInput();
@@ -41,9 +38,13 @@ export const ModalCreateNote = ({ visible, setVisible, setIsChange, isChangeEdit
 
         setTitle('');
         setContent('');
-        confirm(message);
         setIsChange(true);
         setVisible(false);
+        Swal.fire(
+            'Created',
+            `${message}`,
+            'success'
+        )
     }
 
     const handleEdit = async () => {
@@ -60,10 +61,16 @@ export const ModalCreateNote = ({ visible, setVisible, setIsChange, isChangeEdit
         const data = await response.json();
         const { success, message } = data;
         if (success) {
-            confirm(message);
+            Swal.fire(
+                'Created',
+                `${message}`,
+                'success'
+            )
             //setIsChange(true);
             setVisible(false);
-            location.reload();
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
         }
     }
 
@@ -77,7 +84,7 @@ export const ModalCreateNote = ({ visible, setVisible, setIsChange, isChangeEdit
             >
                 <Modal.Header>
                     <Text id="modal-title" size={30}>
-                        Create/Edit {''}
+                        {isChangeEdit ? 'Edit' : 'Create'} {''}
                         <Text b size={30}>
                             Note
                         </Text>
