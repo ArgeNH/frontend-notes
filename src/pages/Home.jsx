@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
-import { Button, Container, Row, Col, Card, Text, Grid, Modal } from '@nextui-org/react';
+import { Button, Container, Text, Grid, Modal } from '@nextui-org/react';
 import { ModalCreateNote } from '../components/ModalCreateNote';
 import { CardNotes } from '../components/CardNotes';
 
@@ -10,6 +11,8 @@ export const Home = () => {
 
     const [visible, setVisible] = useState(false);
     const [notes, setNotes] = useState([]);
+    const [isChange, setIsChange] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const getNotes = async () => {
@@ -18,14 +21,15 @@ export const Home = () => {
                 .then(result => {
                     const { success, data } = result;
                     if (success) setNotes(data);
+                    setIsChange(false);
                 });
         }
         getNotes();
-    }, [setNotes]);
-
-    console.log(notes);
+    }, [isChange, setNotes]);
 
     const handler = () => setVisible(true);
+
+    const navigateToArchived = () => navigate('/archived');
 
     return (
         <>
@@ -50,10 +54,11 @@ export const Home = () => {
                         <ModalCreateNote
                             visible={visible}
                             setVisible={setVisible}
+                            setIsChange={setIsChange}
                         />
                     </Grid>
                     <Grid>
-                        <Button shadow color='gradient' auto>Archived Notes</Button>
+                        <Button shadow color='gradient' auto onClick={navigateToArchived}>Archived Notes</Button>
                     </Grid>
                 </Grid.Container>
             </Container>
@@ -61,7 +66,7 @@ export const Home = () => {
                 <Grid.Container gap={2}>
                     {
                         notes.map(note => (
-                            <CardNotes key={note.idNote} {...note} />
+                            <CardNotes key={note.idNote} {...note} setIsChange={setIsChange} />
                         ))
                     }
                 </Grid.Container>

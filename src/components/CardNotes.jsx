@@ -2,7 +2,7 @@ import { Card, Text, Grid, Row, Button } from '@nextui-org/react';
 
 const URL = import.meta.env.VITE_URL_API;
 
-export const CardNotes = ({ idNote, title, content }) => {
+export const CardNotes = ({ idNote, title, content, setIsChange }) => {
 
     const handleArchive = async (idNote) => {
         const response = await fetch(`${URL}notes/set-notes-archived/${idNote}`, {
@@ -15,13 +15,25 @@ export const CardNotes = ({ idNote, title, content }) => {
         const { success, message } = data;
         if (success) {
             confirm(message);
+            setIsChange(true);
         }
     };
     const handleEdit = async (idNote) => {
         console.log('Edit', idNote);
     };
     const handleDelete = async (idNote) => {
-        console.log('Delete', idNote);
+        const response = await fetch(`${URL}notes/delete-note/${idNote}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        const data = await response.json();
+        const { success, message } = data;
+        if (success) {
+            confirm(message);
+            setIsChange(true);
+        }
     };
 
     return (

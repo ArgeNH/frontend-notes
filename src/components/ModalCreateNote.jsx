@@ -5,13 +5,13 @@ import { Modal, Button, Text, Input, Row, Textarea, useInput } from "@nextui-org
 const URL = import.meta.env.VITE_URL_API;
 
 
-export const ModalCreateNote = ({ visible, setVisible }) => {
+export const ModalCreateNote = ({ visible, setVisible, setIsChange }) => {
 
     const closeHandler = () => setVisible(false);
     const [message, setMessage] = useState({
         state: false,
         message: "",
-        
+
     });
     const { value: title, setValue: setTitle, reset: resetTitle, bindings: changeTitle } = useInput();
     const { value: content, setValue: setContent, reset: resetContent, bindings: changeContent } = useInput();
@@ -37,6 +37,8 @@ export const ModalCreateNote = ({ visible, setVisible }) => {
         setTitle('');
         setContent('');
         confirm(message);
+        setIsChange(true);
+        setVisible(false);
     }
 
     return (
