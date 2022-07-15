@@ -1,23 +1,28 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
-import { Modal, Button, Text, Input, Row, Textarea, useInput } from "@nextui-org/react";
+import { Modal, Button, Text, Input, Textarea, useInput } from "@nextui-org/react";
 
 const URL = import.meta.env.VITE_URL_API;
 
-
-export const ModalCreateNote = ({ visible, setVisible, setIsChange }) => {
+export const ModalCreateNote = ({ visible, setVisible, setIsChange, isChangeEdit, setIsChangeEdit, values }) => {
 
     const closeHandler = () => setVisible(false);
     const [message, setMessage] = useState({
         state: false,
-        message: "",
-
+        message: '',
     });
+
     const { value: title, setValue: setTitle, reset: resetTitle, bindings: changeTitle } = useInput();
     const { value: content, setValue: setContent, reset: resetContent, bindings: changeContent } = useInput();
 
+    useEffect(() => {
+        if (isChangeEdit) {
+            setTitle(values.title);
+            setContent(values.content);
+        }
+    }, [isChangeEdit])
+
     const handleSubmit = async () => {
-        console.log(URL);
         const response = await fetch(`${URL}notes/new-note`, {
             method: 'POST',
             headers: {
@@ -39,6 +44,27 @@ export const ModalCreateNote = ({ visible, setVisible, setIsChange }) => {
         confirm(message);
         setIsChange(true);
         setVisible(false);
+    }
+
+    const handleEdit = async () => {
+        const response = await fetch(`${URL}notes/update-note/${values.idNote}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                title,
+                content
+            })
+        });
+        const data = await response.json();
+        const { success, message } = data;
+        if (success) {
+            confirm(message);
+            //setIsChange(true);
+            setVisible(false);
+            location.reload();
+        }
     }
 
     return (
@@ -80,9 +106,17 @@ export const ModalCreateNote = ({ visible, setVisible, setIsChange }) => {
                     <Button auto flat color="error" onClick={closeHandler}>
                         Cancel
                     </Button>
-                    <Button auto onClick={handleSubmit}>
-                        Save
-                    </Button>
+                    {
+                        isChangeEdit ? (
+                            <Button auto onClick={handleEdit}>
+                                Edit
+                            </Button>
+                        ) : (
+                            <Button auto onClick={handleSubmit}>
+                                Save
+                            </Button>
+                        )
+                    }
                 </Modal.Footer>
             </Modal>
         </>

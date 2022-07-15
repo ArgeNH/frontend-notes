@@ -64,13 +64,11 @@ export const Home = () => {
             </Container>
             <Container responsive display='flex' justify='center'>
                 <Grid.Container gap={2}>
-                        {
-                            notes.map(note => (
-
-                                <CardNotes key={note.idNote} {...note} setIsChange={setIsChange} isArchive={false} />
-
-                            ))
-                        }
+                    {
+                        notes.map(note => (
+                            <CardNotes key={note.idNote} {...note} setIsChange={setIsChange} isArchive={false} />
+                        ))
+                    }
                 </Grid.Container>
             </Container>
         </>

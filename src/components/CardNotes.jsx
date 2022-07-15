@@ -1,12 +1,29 @@
-import { Card, Text, Grid, Row, Button } from '@nextui-org/react';
+import { useEffect, useState } from 'react';
 
+import { Card, Text, Grid, Row, Button } from '@nextui-org/react';
 import { MdArchive, MdUnarchive } from 'react-icons/md';
 import { IoIosTrash } from 'react-icons/io';
 import { FaEdit } from 'react-icons/fa';
 
+import { ModalCreateNote } from './ModalCreateNote';
+
 const URL = import.meta.env.VITE_URL_API;
 
 export const CardNotes = ({ idNote, title, content, setIsChange, isArchive = true }) => {
+
+    const [visible, setVisible] = useState(false);
+    const [isChangeEdit, setIsChangeEdit] = useState(false);
+    const [values, setValues] = useState({});
+
+    const handler = () => {
+        setVisible(true);
+        setIsChangeEdit(true);
+        setValues({
+            idNote,
+            title,
+            content
+        });
+    }
 
     const handleArchive = async (idNote) => {
         const response = await fetch(`${URL}notes/set-notes-archived/${idNote}`, {
@@ -21,10 +38,6 @@ export const CardNotes = ({ idNote, title, content, setIsChange, isArchive = tru
             confirm(message);
             setIsChange(true);
         }
-    };
-
-    const handleEdit = async (idNote) => {
-        console.log('Edit', idNote);
     };
 
     const handleDelete = async (idNote) => {
@@ -42,7 +55,7 @@ export const CardNotes = ({ idNote, title, content, setIsChange, isArchive = tru
         }
     };
 
-    const handleUnArchive = async (idNote) => { 
+    const handleUnArchive = async (idNote) => {
         const response = await fetch(`${URL}notes/set-notes-unarchived/${idNote}`, {
             method: 'PATCH',
             headers: {
@@ -88,9 +101,16 @@ export const CardNotes = ({ idNote, title, content, setIsChange, isArchive = tru
                                             <MdArchive size={20} />
                                         </Button>
                                         <Button size="sm" css={{ mx: '$2' }} flat color="warning" auto
-                                            onClick={() => handleEdit(idNote)}
+                                            onClick={handler}
                                         >
                                             <FaEdit size={20} />
+                                            <ModalCreateNote
+                                                visible={visible}
+                                                setVisible={setVisible}
+                                                setIsChangeEdit={setIsChangeEdit}
+                                                isChangeEdit={isChangeEdit}
+                                                values={values}
+                                            />
                                         </Button>
                                         <Button size="sm" css={{ mx: '$2' }} auto flat color="error"
                                             onClick={() => handleDelete(idNote)}
@@ -100,12 +120,10 @@ export const CardNotes = ({ idNote, title, content, setIsChange, isArchive = tru
                                     </>
                                 )
                             }
-
                         </Row>
                     </Card.Footer>
                 </Card>
             </Grid>
-
         </>
     )
 }
