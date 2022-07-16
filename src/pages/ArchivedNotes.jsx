@@ -22,7 +22,6 @@ export const ArchivedNotes = () => {
             await fetch(`${URL}notes/archived/notes`)
                 .then(response => response.json())
                 .then(result => {
-                    console.log(result);
                     const { success, data } = result;
                     if (success) setNotesArchived(data);
                     setIsChange(false);

@@ -36,8 +36,6 @@ export const Home = () => {
         getNotes();
     }, [isChange, setNotes]);
 
-    console.log(notes);
-
     const handler = () => setVisible(true);
     const handlerCategory = () => setVisibleCategory(true);
 
