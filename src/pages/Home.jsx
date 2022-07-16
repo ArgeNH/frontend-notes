@@ -25,7 +25,7 @@ export const Home = () => {
 
     useEffect(() => {
         const getNotes = async () => {
-            await fetch(`${URL_LOCAL}notes/`)
+            await fetch(`${URL}notes/`)
                 .then(response => response.json())
                 .then(result => {
                     const { success, data } = result;
@@ -45,7 +45,7 @@ export const Home = () => {
 
     const handleSubmitCategory = async (key) => {
         console.log(key)
-        await fetch(`${URL_LOCAL}notes/category/notes/${key}`)
+        await fetch(`${URL}notes/category/notes/${key}`)
             .then(response => response.json())
             .then(result => {
                 console.log(result);

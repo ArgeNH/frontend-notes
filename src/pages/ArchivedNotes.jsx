@@ -19,7 +19,7 @@ export const ArchivedNotes = () => {
 
     useEffect(() => {
         const getNotesArchived = async () => {
-            await fetch(`${URL_LOCAL}notes/archived/notes`)
+            await fetch(`${URL}notes/archived/notes`)
                 .then(response => response.json())
                 .then(result => {
                     console.log(result);

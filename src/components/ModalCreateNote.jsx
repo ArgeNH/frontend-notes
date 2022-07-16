@@ -29,7 +29,7 @@ export const ModalCreateNote = ({ visible, setVisible, setIsChange, isChangeEdit
 
     const handleSubmit = async () => {
         console.log(saveCategories);
-        const response = await fetch(`${URL_LOCAL}notes/new-note`, {
+        const response = await fetch(`${URL}notes/new-note`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
