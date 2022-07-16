@@ -1,13 +1,13 @@
 import { useState, useRef, useEffect } from "react";
 
-import { Modal, Button, Text, Input, Textarea, useInput } from "@nextui-org/react";
+import { Modal, Button, Text, Input, Textarea, useInput, Spacer } from "@nextui-org/react";
 import Swal from "sweetalert2";
 
 const URL = import.meta.env.VITE_URL_API;
 
 export const ModalCreateNote = ({ visible, setVisible, setIsChange, isChangeEdit, setIsChangeEdit, values }) => {
 
-    const closeHandler = () => setVisible(false);
+    const [errors, setErrors] = useState([]);
 
     const { value: title, setValue: setTitle, reset: resetTitle, bindings: changeTitle } = useInput();
     const { value: content, setValue: setContent, reset: resetContent, bindings: changeContent } = useInput();
@@ -18,6 +18,11 @@ export const ModalCreateNote = ({ visible, setVisible, setIsChange, isChangeEdit
             setContent(values.content);
         }
     }, [isChangeEdit])
+
+    const closeHandler = () => {
+        setVisible(false);
+        setErrors([]);
+    }
 
     const handleSubmit = async () => {
         const response = await fetch(`${URL}notes/new-note`, {
@@ -31,15 +36,17 @@ export const ModalCreateNote = ({ visible, setVisible, setIsChange, isChangeEdit
             })
         });
 
-        const { success, message } = await response.json();
+        const { success, message, error } = await response.json();
         if (!success) {
-            setMessage(message);
+            setErrors(error);
+            return
         }
 
         setTitle('');
         setContent('');
         setIsChange(true);
         setVisible(false);
+        setErrors([]);
         Swal.fire(
             'Created',
             `${message}`,
@@ -81,6 +88,7 @@ export const ModalCreateNote = ({ visible, setVisible, setIsChange, isChangeEdit
                 aria-labelledby="New Note"
                 open={visible}
                 onClose={closeHandler}
+                css={{ maxHeight: '460px' }}
             >
                 <Modal.Header>
                     <Text id="modal-title" size={30}>
@@ -96,17 +104,19 @@ export const ModalCreateNote = ({ visible, setVisible, setIsChange, isChangeEdit
                         clearable
                         bordered
                         fullWidth
-                        color="secondary"
+                        color={errors[0]?.param.includes('title') ? 'error' : 'primary'}
                         size="lg"
                         placeholder="Title"
+                        label={errors[0]?.param.includes('title') && `* ${errors[0]?.msg}`}
                     />
                     <Textarea
                         {...changeContent}
                         bordered
-                        color="secondary"
+                        color={errors[1]?.param.includes('content') ? 'error' : 'primary'}
                         size="lg"
                         fullWidth
                         placeholder="Content note"
+                        label={errors[1]?.param.includes('content') && `* ${errors[1]?.msg}`}
                     />
                 </Modal.Body>
                 <Modal.Footer>
