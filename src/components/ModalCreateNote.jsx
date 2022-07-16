@@ -1,13 +1,16 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from 'react';
 
-import { Modal, Button, Text, Input, Textarea, useInput, Spacer } from "@nextui-org/react";
-import Swal from "sweetalert2";
+import { Modal, Button, Text, Input, Textarea, useInput, Dropdown } from '@nextui-org/react';
+import Swal from 'sweetalert2';
+import { SelectCategory } from './SelectCategory';
 
 const URL = import.meta.env.VITE_URL_API;
+const URL_LOCAL = import.meta.env.VITE_URL_LOCAL;
 
 export const ModalCreateNote = ({ visible, setVisible, setIsChange, isChangeEdit, setIsChangeEdit, values }) => {
 
     const [errors, setErrors] = useState([]);
+    const [saveCategories, setSaveCategories] = useState([]);
 
     const { value: title, setValue: setTitle, reset: resetTitle, bindings: changeTitle } = useInput();
     const { value: content, setValue: setContent, reset: resetContent, bindings: changeContent } = useInput();
@@ -25,14 +28,16 @@ export const ModalCreateNote = ({ visible, setVisible, setIsChange, isChangeEdit
     }
 
     const handleSubmit = async () => {
-        const response = await fetch(`${URL}notes/new-note`, {
+        console.log(saveCategories);
+        const response = await fetch(`${URL_LOCAL}notes/new-note`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
                 title,
-                content
+                content,
+                category: saveCategories
             })
         });
 
@@ -72,12 +77,18 @@ export const ModalCreateNote = ({ visible, setVisible, setIsChange, isChangeEdit
                 'Created',
                 `${message}`,
                 'success'
-            )
-            //setIsChange(true);
+            ).then(res => {
+                const { isConfirmed } = res;
+                if (isConfirmed)
+                    location.reload();
+            })
             setVisible(false);
-            setTimeout(() => {
-                location.reload();
-            }, 1000);
+        }
+    }
+
+    const handleAddCategory = (idCategory) => {
+        if (!saveCategories?.includes(idCategory)) {
+            setSaveCategories([...saveCategories, idCategory]);
         }
     }
 
@@ -117,6 +128,13 @@ export const ModalCreateNote = ({ visible, setVisible, setIsChange, isChangeEdit
                         fullWidth
                         placeholder="Content note"
                         label={errors[1]?.param.includes('content') && `* ${errors[1]?.msg}`}
+                    />
+                    <SelectCategory
+                        name={'Category'}
+                        saveCategories={saveCategories}
+                        setSaveCategories={setSaveCategories}
+                        handleAddCategory={handleAddCategory}
+                        isFilter={false}
                     />
                 </Modal.Body>
                 <Modal.Footer>

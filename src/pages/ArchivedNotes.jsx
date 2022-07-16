@@ -9,6 +9,7 @@ import { Nothing } from '../components/Nothing';
 import { Layout } from '../components/Layout';
 
 const URL = import.meta.env.VITE_URL_API;
+const URL_LOCAL = import.meta.env.VITE_URL_LOCAL;
 
 export const ArchivedNotes = () => {
 
@@ -18,9 +19,10 @@ export const ArchivedNotes = () => {
 
     useEffect(() => {
         const getNotesArchived = async () => {
-            await fetch(`${URL}notes/archived/notes`)
+            await fetch(`${URL_LOCAL}notes/archived/notes`)
                 .then(response => response.json())
                 .then(result => {
+                    console.log(result);
                     const { success, data } = result;
                     if (success) setNotesArchived(data);
                     setIsChange(false);
@@ -56,7 +58,7 @@ export const ArchivedNotes = () => {
             </Layout>
             <Layout gap={2}>
                 {
-                    notesArchived.map(note => (
+                    notesArchived?.map(note => (
                         <CardNotes key={note.idNote} {...note} setIsChange={setIsChange} />
                     ))
                 }

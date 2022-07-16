@@ -8,19 +8,24 @@ import { TiArrowRightThick } from 'react-icons/ti';
 import { CardNotes } from '../components/CardNotes';
 import { Nothing } from '../components/Nothing';
 import { Layout } from '../components/Layout';
+import { ModalCreateCategory } from '../components/ModalCreateCategory';
+import { SelectCategory } from '../components/SelectCategory';
 
 const URL = import.meta.env.VITE_URL_API;
+const URL_LOCAL = import.meta.env.VITE_URL_LOCAL;
 
 export const Home = () => {
 
     const [visible, setVisible] = useState(false);
+    const [visibleCategory, setVisibleCategory] = useState(false);
     const [notes, setNotes] = useState([]);
     const [isChange, setIsChange] = useState(false);
+    const [saveCategories, setSaveCategories] = useState([]);
     const navigate = useNavigate();
 
     useEffect(() => {
         const getNotes = async () => {
-            await fetch(`${URL}notes/`)
+            await fetch(`${URL_LOCAL}notes/`)
                 .then(response => response.json())
                 .then(result => {
                     const { success, data } = result;
@@ -31,9 +36,31 @@ export const Home = () => {
         getNotes();
     }, [isChange, setNotes]);
 
+    console.log(notes);
+
     const handler = () => setVisible(true);
+    const handlerCategory = () => setVisibleCategory(true);
 
     const navigateToArchived = () => navigate('/archived');
+
+    const handleSubmitCategory = async (key) => {
+        console.log(key)
+        await fetch(`${URL_LOCAL}notes/category/notes/${key}`)
+            .then(response => response.json())
+            .then(result => {
+                console.log(result);
+                const { success, data } = result;
+                if (data) {
+                    const { notes } = data;
+                    if (success) {
+                        setNotes(notes);
+                        setIsChange(false);
+                    }
+                } else {
+                    setIsChange(false);
+                }
+            });
+    }
 
     return (
         <>
@@ -61,13 +88,29 @@ export const Home = () => {
                     />
                 </Grid>
                 <Grid>
+                    <Button shadow auto onClick={handlerCategory}>Create Category</Button>
+                    <ModalCreateCategory
+                        visible={visibleCategory}
+                        setVisible={setVisibleCategory}
+                    />
+                </Grid>
+                <Grid>
                     <Button flat color='primary' auto onClick={navigateToArchived}>
                         Archived Notes
                         <TiArrowRightThick size={20} />
                     </Button>
                 </Grid>
             </Layout>
+            <Layout gap={2} isJustify={false}>
+                <SelectCategory
+                    name={'Category filter'}
+                    saveCategories={saveCategories}
+                    setSaveCategories={setSaveCategories}
+                    handleSubmitCategory={handleSubmitCategory}
+                />
+            </Layout>
             <Layout gap={2}>
+
                 {
                     notes.map(note => (
                         <CardNotes key={note.idNote} {...note} setIsChange={setIsChange} isArchive={false} />

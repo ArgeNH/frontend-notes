@@ -1,9 +1,10 @@
 import { useState } from 'react';
 
-import { Card, Text, Grid, Row, Button, Spacer } from '@nextui-org/react';
-import { MdArchive, MdUnarchive, MdNote } from 'react-icons/md';
+import { Card, Text, Grid, Row, Button, Col } from '@nextui-org/react';
+import { MdArchive, MdUnarchive } from 'react-icons/md';
 import { IoIosTrash } from 'react-icons/io';
 import { FaEdit } from 'react-icons/fa';
+import { GoPrimitiveDot } from 'react-icons/go';
 import Swal from 'sweetalert2';
 
 import { ModalCreateNote } from './ModalCreateNote';
@@ -11,7 +12,7 @@ import { formatDate } from '../helpers/formatDate';
 
 const URL = import.meta.env.VITE_URL_API;
 
-export const CardNotes = ({ idNote, title, content, updatedAt, setIsChange, isArchive = true }) => {
+export const CardNotes = ({ idNote, title, content, updatedAt, categories, setIsChange, isArchive = true }) => {
 
     const [visible, setVisible] = useState(false);
     const [isChangeEdit, setIsChangeEdit] = useState(false);
@@ -110,14 +111,27 @@ export const CardNotes = ({ idNote, title, content, updatedAt, setIsChange, isAr
                         <Text>
                             {content}
                         </Text>
-                        <Spacer x={1} />
+                    </Card.Body>
+                    <Card.Divider />
+                    <Row gap={2}>
+                        {
+                            categories && (
+                                categories.map(category => (
+                                    <Col key={category.name}>
+                                        <Text b color='primary'>
+                                            {category.name}
+                                        </Text>
+                                    </Col>
+                                ))
+                            )
+                        }
+                    </Row>
+                    <Card.Divider />
+                    <Card.Footer css={{ width: '100%', justifyContent: 'space-between' }}>
                         <Text b>
                             Last edited: {updateDate}
                         </Text>
-                    </Card.Body>
-                    <Card.Divider />
-                    <Card.Footer>
-                        <Row justify="flex-end" >
+                        <Row justify="flex-end" css={{ width: 'auto' }}>
                             {
                                 isArchive ? (
                                     <Button size="sm" css={{ mx: '$2' }} auto flat color="primary"
