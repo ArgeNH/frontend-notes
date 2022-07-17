@@ -3,11 +3,12 @@ import { useState, useRef, useEffect } from 'react';
 import { Modal, Button, Text, Input, Textarea, useInput, Dropdown } from '@nextui-org/react';
 import Swal from 'sweetalert2';
 import { SelectCategory } from './SelectCategory';
+import { ButtonCategories } from './ButtonCategories';
 
 const URL = import.meta.env.VITE_URL_API;
 const URL_LOCAL = import.meta.env.VITE_URL_LOCAL;
 
-export const ModalCreateNote = ({ visible, setVisible, setIsChange, isChangeEdit, setIsChangeEdit, values }) => {
+export const ModalCreateNote = ({ visible, setVisible, setIsChange, isChangeEdit, setIsChangeEdit, values, categories }) => {
 
     const [errors, setErrors] = useState([]);
     const [saveCategories, setSaveCategories] = useState([]);
@@ -28,7 +29,6 @@ export const ModalCreateNote = ({ visible, setVisible, setIsChange, isChangeEdit
     }
 
     const handleSubmit = async () => {
-        console.log(saveCategories);
         const response = await fetch(`${URL}notes/new-note`, {
             method: 'POST',
             headers: {
@@ -52,11 +52,15 @@ export const ModalCreateNote = ({ visible, setVisible, setIsChange, isChangeEdit
         setIsChange(true);
         setVisible(false);
         setErrors([]);
-        Swal.fire(
-            'Created',
-            `${message}`,
-            'success'
-        )
+        setSaveCategories([]);
+        Swal.fire({
+            position: 'center',
+            icon: 'success',
+            title: 'Created',
+            text: `${message}`,
+            showConfirmButton: false,
+            timer: 1500
+        })
     }
 
     const handleEdit = async () => {
@@ -74,13 +78,15 @@ export const ModalCreateNote = ({ visible, setVisible, setIsChange, isChangeEdit
         const { success, message } = data;
         if (success) {
             Swal.fire(
-                'Created',
+                'Edited!',
                 `${message}`,
                 'success'
             ).then(res => {
                 const { isConfirmed } = res;
-                if (isConfirmed)
-                    location.reload();
+                if (isConfirmed) {
+                    setIsChange(true);
+                    setIsChangeEdit(true);
+                }
             })
             setVisible(false);
         }
@@ -99,7 +105,6 @@ export const ModalCreateNote = ({ visible, setVisible, setIsChange, isChangeEdit
                 aria-labelledby="New Note"
                 open={visible}
                 onClose={closeHandler}
-                css={{ maxHeight: '460px' }}
             >
                 <Modal.Header>
                     <Text id="modal-title" size={30}>
@@ -129,13 +134,27 @@ export const ModalCreateNote = ({ visible, setVisible, setIsChange, isChangeEdit
                         placeholder="Content note"
                         label={errors[1]?.param.includes('content') && `* ${errors[1]?.msg}`}
                     />
-                    <SelectCategory
-                        name={'Category'}
-                        saveCategories={saveCategories}
-                        setSaveCategories={setSaveCategories}
-                        handleAddCategory={handleAddCategory}
-                        isFilter={false}
-                    />
+                    {
+                        isChangeEdit && categories?.map(category => (
+                            <ButtonCategories
+                                key={category.name}
+                                {...category}
+                                setVisible={setVisible}
+                                setIsChange={setIsChange}
+                            />
+                        ))
+                    }
+                    {
+                        !isChangeEdit && (
+                            <SelectCategory
+                                name={'Select your category'}
+                                saveCategories={saveCategories}
+                                setSaveCategories={setSaveCategories}
+                                handleAddCategory={handleAddCategory}
+                                isFilter={false}
+                            />
+                        )
+                    }
                 </Modal.Body>
                 <Modal.Footer>
                     <Button auto flat color="error" onClick={closeHandler}>

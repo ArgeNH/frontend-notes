@@ -4,7 +4,6 @@ import { Card, Text, Grid, Row, Button, Col } from '@nextui-org/react';
 import { MdArchive, MdUnarchive } from 'react-icons/md';
 import { IoIosTrash } from 'react-icons/io';
 import { FaEdit } from 'react-icons/fa';
-import { GoPrimitiveDot } from 'react-icons/go';
 import Swal from 'sweetalert2';
 
 import { ModalCreateNote } from './ModalCreateNote';
@@ -40,11 +39,14 @@ export const CardNotes = ({ idNote, title, content, updatedAt, categories, setIs
         const data = await response.json();
         const { success, message } = data;
         if (success) {
-            Swal.fire(
-                'Archived',
-                `${message}`,
-                'success'
-            )
+            Swal.fire({
+                position: 'center',
+                icon: 'success',
+                title: 'Archived',
+                text: `${message}`,
+                showConfirmButton: false,
+                timer: 1500
+            })
             setIsChange(true);
         }
     };
@@ -90,11 +92,14 @@ export const CardNotes = ({ idNote, title, content, updatedAt, categories, setIs
         const data = await response.json();
         const { success, message } = data;
         if (success) {
-            Swal.fire(
-                'Unarchived',
-                `${message}`,
-                'success'
-            )
+            Swal.fire({
+                position: 'center',
+                icon: 'success',
+                title: 'Unarchived',
+                text: `${message}`,
+                showConfirmButton: false,
+                timer: 1500
+            })
             setIsChange(true);
         }
     };
@@ -102,7 +107,13 @@ export const CardNotes = ({ idNote, title, content, updatedAt, categories, setIs
     return (
         <>
             <Grid xs={12} sm={5} justify='center'>
-                <Card css={{ mw: '500px', $$cardColor: '$colors$blue100', }}>
+                <Card
+                    css={{ mw: '500px', $$cardColor: '$colors$blue100', }}
+                    variant='bordered'
+                    borderWeight='black'
+                    isHoverable={true}
+                    
+                >
                     <Card.Header>
                         <Text b>{title}</Text>
                     </Card.Header>
@@ -113,11 +124,11 @@ export const CardNotes = ({ idNote, title, content, updatedAt, categories, setIs
                         </Text>
                     </Card.Body>
                     <Card.Divider />
-                    <Row gap={2}>
+                    <Row gap={2} wrap='nowrap'>
                         {
                             categories && (
                                 categories.map(category => (
-                                    <Col key={category.name}>
+                                    <Col key={category.name} span={3}>
                                         <Text b color='primary'>
                                             {category.name}
                                         </Text>
@@ -154,9 +165,11 @@ export const CardNotes = ({ idNote, title, content, updatedAt, categories, setIs
                                 <ModalCreateNote
                                     visible={visible}
                                     setVisible={setVisible}
+                                    setIsChange={setIsChange}
                                     setIsChangeEdit={setIsChangeEdit}
                                     isChangeEdit={isChangeEdit}
                                     values={values}
+                                    categories={categories}
                                 />
                             </Button>
                             <Button size="sm" css={{ mx: '$2' }} auto flat color="error"

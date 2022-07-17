@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { Dropdown } from '@nextui-org/react';
 
@@ -7,6 +7,7 @@ const URL = import.meta.env.VITE_URL_API;
 export const SelectCategory = ({ name, handleSubmitCategory, handleAddCategory, isFilter = true }) => {
 
     const [categories, setCategories] = useState([]);
+    const [selected, setSelected] = useState(new Set([]));
 
     useEffect(() => {
         const getCategories = async () => {
@@ -20,6 +21,11 @@ export const SelectCategory = ({ name, handleSubmitCategory, handleAddCategory, 
         getCategories();
     }, [setCategories]);
 
+    const selectedValue = useMemo(
+        () => Array.from(selected).join(',').replaceAll('_', ' '),
+        [selected]
+    );
+
     return (
         <Dropdown>
             <Dropdown.Button flat color="secondary">
@@ -29,7 +35,11 @@ export const SelectCategory = ({ name, handleSubmitCategory, handleAddCategory, 
                 isFilter
                     ? handleSubmitCategory(parseInt(key))
                     : handleAddCategory(parseInt(key))
-            )}>
+            )}
+                selectionMode={isFilter ? 'single' : 'multiple'}
+                selectedKeys={selected}
+                onSelectionChange={setSelected}
+            >
                 {
                     categories.map(category => (
                         <Dropdown.Item key={category.idCategory}>{category.name}</Dropdown.Item>

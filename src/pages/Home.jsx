@@ -1,7 +1,7 @@
 import { useEffect, useState, Suspense } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { Button, Container, Text, Grid } from '@nextui-org/react';
+import { Button, Container, Text, Grid, Spacer } from '@nextui-org/react';
 import { ModalCreateNote } from '../components/ModalCreateNote';
 import { TiArrowRightThick } from 'react-icons/ti';
 
@@ -17,10 +17,10 @@ const URL_LOCAL = import.meta.env.VITE_URL_LOCAL;
 export const Home = () => {
 
     const [visible, setVisible] = useState(false);
-    const [visibleCategory, setVisibleCategory] = useState(false);
     const [notes, setNotes] = useState([]);
     const [isChange, setIsChange] = useState(false);
     const [saveCategories, setSaveCategories] = useState([]);
+    const [titleFilter, setTitleFilter] = useState('');
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -31,13 +31,13 @@ export const Home = () => {
                     const { success, data } = result;
                     if (success) setNotes(data);
                     setIsChange(false);
+                    setTitleFilter('')
                 });
         }
         getNotes();
     }, [isChange, setNotes]);
 
     const handler = () => setVisible(true);
-    const handlerCategory = () => setVisibleCategory(true);
 
     const navigateToArchived = () => navigate('/archived');
 
@@ -49,7 +49,8 @@ export const Home = () => {
                 console.log(result);
                 const { success, data } = result;
                 if (data) {
-                    const { notes } = data;
+                    const { notes, name } = data;
+                    setTitleFilter(name);
                     if (success) {
                         setNotes(notes);
                         setIsChange(false);
@@ -86,32 +87,37 @@ export const Home = () => {
                     />
                 </Grid>
                 <Grid>
-                    <Button shadow auto onClick={handlerCategory}>Create Category</Button>
-                    <ModalCreateCategory
-                        visible={visibleCategory}
-                        setVisible={setVisibleCategory}
-                    />
-                </Grid>
-                <Grid>
                     <Button flat color='primary' auto onClick={navigateToArchived}>
                         Archived Notes
                         <TiArrowRightThick size={20} />
                     </Button>
                 </Grid>
             </Layout>
-            <Layout gap={2} isJustify={false}>
+            <Layout gap={5} isJustify={false}>
                 <SelectCategory
                     name={'Category filter'}
                     saveCategories={saveCategories}
                     setSaveCategories={setSaveCategories}
                     handleSubmitCategory={handleSubmitCategory}
                 />
+
             </Layout>
+            <Layout gap={2}>
+                <Text b size={20} color='primary' transform='capitalize'>
+                    {titleFilter ? `Category: ${titleFilter}` : 'All Notes'}
+                </Text>
+            </Layout>
+            <Spacer x={1} />
             <Layout gap={2}>
 
                 {
                     notes.map(note => (
-                        <CardNotes key={note.idNote} {...note} setIsChange={setIsChange} isArchive={false} />
+                        <CardNotes
+                            key={note.idNote}
+                            {...note}
+                            setIsChange={setIsChange}
+                            isArchive={false}
+                        />
                     ))
                 }
                 {
