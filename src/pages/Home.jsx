@@ -102,6 +102,7 @@ export const Home = () => {
                 />
 
             </Layout>
+            <Spacer x={1} />
             <Layout gap={2}>
                 <Text b size={20} color='primary' transform='capitalize'>
                     {titleFilter ? `Category: ${titleFilter}` : 'All Notes'}
